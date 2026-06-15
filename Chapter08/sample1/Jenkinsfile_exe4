@@ -24,7 +24,7 @@ pipeline {
                     cd Chapter08/sample1
                     ./gradlew test
                     ./gradlew jacocoTestReport
-                    ./gradlew jacocoTestCoverageVerification'
+                    ./gradlew jacocoTestCoverageVerification
                     ./gradlew checkstyleMain
                 '''
 
