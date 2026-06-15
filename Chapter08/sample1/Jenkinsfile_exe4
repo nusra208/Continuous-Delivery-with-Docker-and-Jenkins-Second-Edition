@@ -24,7 +24,8 @@ pipeline {
                     cd Chapter08/sample1
                     ./gradlew test
                     ./gradlew jacocoTestReport
-                    ./gradlew jacocoTestCoverageVerification
+                    ./gradlew jacocoTestCoverageVerification'
+                    ./gradlew checkstyleMain
                 '''
 
                 publishHTML(
@@ -34,12 +35,20 @@ pipeline {
                         reportName: 'JaCoCo Report'
                     ]
                 )
-                
+
                 publishHTML(
                     target: [
                         reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html/',
                         reportFiles: 'index.html',
                         reportName: 'JaCoCo Cov Report'
+                    ]
+    
+                )
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/checkstyle/',
+                        reportFiles: 'main.html',
+                        reportName: 'jacoco checkstyle'
                     ]
     
                 )
