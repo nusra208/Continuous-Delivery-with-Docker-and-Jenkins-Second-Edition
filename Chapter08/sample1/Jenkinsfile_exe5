@@ -20,66 +20,60 @@ pipeline {
 
         stage ('check and Run tests') {
             steps {
-                sh'''
+                sh '''
                     cd Chapter08/sample1
                     ./gradlew test
                     ./gradlew jacocoTestReport
                 '''
+
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/tests/test',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Report'
+                    ]
+                )
+
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html/',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Cov Report'
+                    ]
+                )
             }
+
+            
+        }
+
+        stage('Code Quality Checks') {
             when {
-                changeset "*.java"  
+                changeset "*.java"
             }
-            steps {               
+            steps {
                 sh '''
+                    cd Chapter08/sample1
                     ./gradlew jacocoTestCoverageVerification
                     ./gradlew checkstyleMain
-                    '''
-                }
-        }
+                '''
 
-        stage ('if Run successfully') {
-            when {
-                success()
-            }
-            steps{
-                echo 'pipeline ran perfectly'
-            }
-        }
-
-        stage ('if Run failed') {
-            when {
-                failed()
-            }
-            step {
-                echo 'pipeline failure'
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/checkstyle/',
+                        reportFiles: 'main.html',
+                        reportName: 'jacoco checkstyle'
+                    ]
+                )
             }
         }
+    }
 
-        publishHTML(
-            target: [
-                reportDir: 'Chapter08/sample1/build/reports/tests/test',
-                reportFiles: 'index.html',
-                reportName: 'JaCoCo Report'
-            ]
-        )
-
-        publishHTML(
-            target: [
-                reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html/',
-                reportFiles: 'index.html',
-                reportName: 'JaCoCo Cov Report'
-            ]
-
-        )
-        publishHTML(
-            target: [
-                reportDir: 'Chapter08/sample1/build/reports/checkstyle/',
-                reportFiles: 'main.html',
-                reportName: 'jacoco checkstyle'
-            ]
-
-        )
-                
+    post {
+        success {
+            echo 'Pipeline ran successfully'
+        }
+        failure {
+            echo 'Pipeline failed'
+        }
     }
 }
-    
