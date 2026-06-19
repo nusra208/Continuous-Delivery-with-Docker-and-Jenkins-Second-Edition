@@ -1,0 +1,85 @@
+// This example uses Jenkins' Declarative Pipeline syntax
+
+pipeline {
+    agent {
+        label 'docker-agent'
+    }
+
+    stages {
+        stage('Checkout code and prepare environment') {
+            steps {
+                git url: 'https://github.com/nusra208/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition',
+                    branch: 'master'
+
+                sh '''
+                    cd Chapter08/sample1
+                    chmod +x gradlew
+                '''
+            }
+        }
+
+        stage ('check and Run tests') {
+            steps {
+                sh'''
+                    cd Chapter08/sample1
+                    ./gradlew test
+                    ./gradlew jacocoTestReport
+                '''
+            }
+            when {
+                changeset "*.java"  
+            }
+            steps {               
+                sh '''
+                    ./gradlew jacocoTestCoverageVerification
+                    ./gradlew checkstyleMain
+                    '''
+                }
+        }
+
+        stage ('if Run successfully') {
+            when {
+                success()
+            }
+            steps{
+                echo 'pipeline ran perfectly'
+            }
+        }
+
+        stage ('if Run failed') {
+            when {
+                failed()
+            }
+            step {
+                echo 'pipeline failure'
+            }
+        }
+
+        publishHTML(
+            target: [
+                reportDir: 'Chapter08/sample1/build/reports/tests/test',
+                reportFiles: 'index.html',
+                reportName: 'JaCoCo Report'
+            ]
+        )
+
+        publishHTML(
+            target: [
+                reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html/',
+                reportFiles: 'index.html',
+                reportName: 'JaCoCo Cov Report'
+            ]
+
+        )
+        publishHTML(
+            target: [
+                reportDir: 'Chapter08/sample1/build/reports/checkstyle/',
+                reportFiles: 'main.html',
+                reportName: 'jacoco checkstyle'
+            ]
+
+        )
+                
+    }
+}
+    
