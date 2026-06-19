@@ -25,7 +25,25 @@ pipeline {
                     ./gradlew test
                     ./gradlew jacocoTestReport
                 '''
+
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/tests/test',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Report'
+                    ]
+                )
+
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html/',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Cov Report'
+                    ]
+                )
             }
+
+            
         }
 
         stage('Code Quality Checks') {
@@ -38,6 +56,14 @@ pipeline {
                     ./gradlew jacocoTestCoverageVerification
                     ./gradlew checkstyleMain
                 '''
+
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/checkstyle/',
+                        reportFiles: 'main.html',
+                        reportName: 'jacoco checkstyle'
+                    ]
+                )
             }
         }
     }
@@ -45,27 +71,6 @@ pipeline {
     post {
         success {
             echo 'Pipeline ran successfully'
-            publishHTML(
-                target: [
-                    reportDir: 'Chapter08/sample1/build/reports/tests/test',
-                    reportFiles: 'index.html',
-                    reportName: 'JaCoCo Report'
-                ]
-            )
-            publishHTML(
-                target: [
-                    reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html/',
-                    reportFiles: 'index.html',
-                    reportName: 'JaCoCo Cov Report'
-                ]
-            )
-            publishHTML(
-                target: [
-                    reportDir: 'Chapter08/sample1/build/reports/checkstyle/',
-                    reportFiles: 'main.html',
-                    reportName: 'jacoco checkstyle'
-                ]
-            )
         }
         failure {
             echo 'Pipeline failed'
