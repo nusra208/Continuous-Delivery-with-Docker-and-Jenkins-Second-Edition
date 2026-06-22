@@ -8,10 +8,8 @@ pipeline {
     stages {
         stage('Checkout code and prepare environment') {
             steps {
-                git url: 'https://github.com/nusra208/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition',
-                    branch: 'master'
-
-                sh '''
+                checkout scm
+                    sh '''
                     cd Chapter08/sample1
                     chmod +x gradlew
                 '''
