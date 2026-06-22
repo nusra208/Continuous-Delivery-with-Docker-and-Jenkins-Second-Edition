@@ -27,17 +27,11 @@ pipeline {
                     target: [
                         reportDir: 'Chapter08/sample1/build/reports/tests/test',
                         reportFiles: 'index.html',
-                        reportName: 'JaCoCo Report'
+                        reportName: 'Test Report'
                     ]
                 )
 
-                publishHTML(
-                    target: [
-                        reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html/',
-                        reportFiles: 'index.html',
-                        reportName: 'JaCoCo Cov Report'
-                    ]
-                )
+               
             }
 
             
@@ -54,12 +48,18 @@ pipeline {
                     ./gradlew jacocoTestCoverageVerification
                     ./gradlew checkstyleMain
                 '''
-
+                publishHTML(
+                    target: [
+                      reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
+                      reportFiles: 'index.html',
+                      reportName: 'JaCoCo Coverage Report'
+            ]
+        )
                 publishHTML(
                     target: [
                         reportDir: 'Chapter08/sample1/build/reports/checkstyle/',
                         reportFiles: 'main.html',
-                        reportName: 'jacoco checkstyle'
+                        reportName: 'Checkstyle Report'
                     ]
                 )
             }
