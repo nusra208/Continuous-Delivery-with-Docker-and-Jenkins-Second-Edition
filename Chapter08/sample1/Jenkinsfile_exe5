@@ -70,10 +70,10 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline ran successfully'
+         echo 'Pipeline ran successfully'
         }
         failure {
-            echo 'Pipeline failed'
+          echo 'pipeline failure'
         }
     }
 }
