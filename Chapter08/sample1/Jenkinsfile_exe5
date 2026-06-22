@@ -21,7 +21,6 @@ pipeline {
                 sh '''
                     cd Chapter08/sample1
                     ./gradlew test
-                    ./gradlew jacocoTestReport
                 '''
 
                 publishHTML(
@@ -46,11 +45,12 @@ pipeline {
 
         stage('Code Quality Checks') {
             when {
-                changeset "*.java"
+                changeset "**/*.java"
             }
             steps {
                 sh '''
                     cd Chapter08/sample1
+                    ./gradlew jacocoTestReport
                     ./gradlew jacocoTestCoverageVerification
                     ./gradlew checkstyleMain
                 '''
@@ -68,7 +68,7 @@ pipeline {
 
     post {
         success {
-         echo 'Pipeline ran successfully'
+         echo 'pipeline ran perfectly'
         }
         failure {
           echo 'pipeline failure'
