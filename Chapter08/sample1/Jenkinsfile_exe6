@@ -1,0 +1,111 @@
+// This example uses Jenkins' Declarative Pipeline syntax
+
+pipeline {
+    agent {
+        label 'docker-agent'
+    }
+
+    stages {
+        stage('Validate branch') {
+            when {
+                not {
+                    anyOf {
+                        branch 'master'
+                        expression { env.BRANCH_NAME?.contains('feature') }
+                    }
+                }
+            }
+            steps {
+                error("This pipeline only allows the main branch or branches containing 'feature'. Current branch: ${env.BRANCH_NAME}")
+            }
+        }
+
+        stage('Checkout code and prepare environment') {
+            steps {
+                git url: 'https://github.com/nusra208/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition',
+                    branch: 'master'
+
+                sh '''
+                    cd Chapter08/sample1
+                    chmod +x gradlew
+                '''
+            }
+        }
+
+        stage('Run test') {
+            when {
+                expression { env.BRANCH_NAME?.contains('feature') }
+            }
+            steps {
+                sh '''
+                    cd Chapter08/sample1
+                    ./gradlew test
+                '''
+
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/tests/test',
+                        reportFiles: 'index.html',
+                        reportName: 'Test Report'
+                    ]
+                )
+            }
+        }
+
+        stage('Code Quality Checks') {
+            when {
+                expression { env.BRANCH_NAME?.contains('feature') }
+            }
+            steps {
+                sh '''
+                    cd Chapter08/sample1
+                    ./gradlew jacocoTestReport
+                    ./gradlew jacocoTestCoverageVerification
+                    ./gradlew checkstyleMain
+                '''
+                publishHTML(
+                    target: [
+                      reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
+                      reportFiles: 'index.html',
+                      reportName: 'JaCoCo Coverage Report'
+            ]
+        )
+                publishHTML(
+                    target: [
+                        reportDir: 'Chapter08/sample1/build/reports/checkstyle/',
+                        reportFiles: 'main.html',
+                        reportName: 'Checkstyle Report'
+                    ]
+                )
+            }
+        }
+
+        stage('Coverage Test') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh '''
+                    cd Chapter08/sample1
+                    ./gradlew jacocoTestCoverageVerification
+                '''
+                publishHTML(
+                    target: [
+                      reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
+                      reportFiles: 'index.html',
+                      reportName: 'JaCoCo Coverage Report'
+                    ]
+                )
+            }
+        }
+    }
+
+    post {
+        success {
+         echo 'pipeline ran perfectly'
+        }
+        failure {
+          echo 'pipeline failure'
+        }
+    }
+}
