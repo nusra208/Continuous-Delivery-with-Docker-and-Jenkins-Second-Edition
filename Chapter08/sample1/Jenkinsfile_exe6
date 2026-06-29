@@ -10,7 +10,7 @@ pipeline {
             when {
                 not {
                     anyOf {
-                        branch 'main'
+                        branch 'master'
                         expression { env.BRANCH_NAME?.contains('feature') }
                     }
                 }
@@ -82,7 +82,7 @@ pipeline {
 
         stage('Coverage Test') {
             when {
-                branch 'main'
+                branch 'master'
             }
             steps {
                 sh '''
