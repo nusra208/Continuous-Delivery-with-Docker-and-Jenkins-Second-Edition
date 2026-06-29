@@ -11,7 +11,7 @@ pipeline {
                 not {
                     anyOf {
                         branch 'master'
-                        expression { env.BRANCH_NAME?.contains('feature') }
+                        branch '*feature*' }
                     }
                 }
             }
@@ -34,8 +34,9 @@ pipeline {
 
         stage('Run test') {
             when {
-                expression { env.BRANCH_NAME?.contains('feature') }
-            }
+             branch '*feature*'
+        }
+
             steps {
                 sh '''
                     cd Chapter08/sample1
@@ -54,8 +55,9 @@ pipeline {
 
         stage('Code Quality Checks') {
             when {
-                expression { env.BRANCH_NAME?.contains('feature') }
-            }
+              branch "*feature*"
+              }
+
             steps {
                 sh '''
                     cd Chapter08/sample1
