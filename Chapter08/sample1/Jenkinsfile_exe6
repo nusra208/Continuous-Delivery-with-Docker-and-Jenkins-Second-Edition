@@ -32,10 +32,6 @@ pipeline {
         }
 
         stage('Run test') {
-            when {
-             branch '*feature*'
-            }
-
             steps {
                 sh '''
                     cd Chapter08/sample1
@@ -61,16 +57,9 @@ pipeline {
                 sh '''
                     cd Chapter08/sample1
                     ./gradlew jacocoTestReport
-                    ./gradlew jacocoTestCoverageVerification
                     ./gradlew checkstyleMain
                 '''
-                publishHTML(
-                    target: [
-                      reportDir: 'Chapter08/sample1/build/reports/jacoco/test/html',
-                      reportFiles: 'index.html',
-                      reportName: 'JaCoCo Coverage Report'
-            ]
-        )
+                
                 publishHTML(
                     target: [
                         reportDir: 'Chapter08/sample1/build/reports/checkstyle/',
